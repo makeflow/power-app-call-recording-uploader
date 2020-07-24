@@ -1,4 +1,5 @@
 import type {CompositeValueDescriptor} from '@makeflow/types/value';
+import {renderToStaticMarkup} from 'react-dom/server';
 import type {Dict} from 'tslang';
 import {DescriptionErrorMessage} from '../error-message';
 import {IUploadRecordApiReturn} from '../model';
@@ -10,10 +11,13 @@ export interface PowerAppDescription {
 }
 
 export class PowerAppHookReturn implements PowerAppDescription {
+  description: string;
   stage: 'done' | 'none' | undefined;
   output: Dict<CompositeValueDescriptor> | undefined;
 
-  constructor(public description: string) {}
+  constructor(view: JSX.Element) {
+    this.description = renderToStaticMarkup(view);
+  }
 
   setOutputValue(key: string, value: CompositeValueDescriptor): this {
     if (!this.output) {
