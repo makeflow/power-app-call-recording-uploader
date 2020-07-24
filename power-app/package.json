@@ -1,0 +1,49 @@
+{
+  "name": "power-app-starter",
+  "version": "0.1.0",
+  "description": "Power-App 开发模板",
+  "main": "index.js",
+  "scripts": {
+    "pub": "mf publish",
+    "int": "cp .mfrc ~/.mfrc && mf login",
+    "dev": "ts-node-dev --respawn --transpileOnly app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.mufan.io:makeflow/power-app-starter.git"
+  },
+  "author": "mokuo",
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "dependencies": {
+    "@koa/router": "^9.0.1",
+    "@makeflow/power-app": "0.2.0-wip.26",
+    "@types/url-join": "^4.0.0",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "nanoid": "^3.1.10",
+    "path-parser": "^6.1.0",
+    "qrcode": "^1.4.4",
+    "typescript-json-serializer": "^2.3.2",
+    "url-join": "^4.0.1",
+    "validator": "^13.1.1"
+  },
+  "devDependencies": {
+    "@magicspace/configs": "^0.2.5",
+    "@makeflow/cli": "0.1.0-wip.5",
+    "@types/koa": "^2.11.3",
+    "@types/koa__router": "^8.0.2",
+    "@types/qrcode": "^1.3.4",
+    "@types/validator": "^13.1.0",
+    "husky": "^4.2.5",
+    "prettier": "^2.0.5",
+    "prettier-plugin-organize-imports": "^1.1.0",
+    "pretty-quick": "^2.0.1",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.9.2"
+  }
+}
