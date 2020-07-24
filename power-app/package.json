@@ -6,7 +6,7 @@
   "scripts": {
     "pub": "mf publish",
     "int": "cp .mfrc ~/.mfrc && mf login",
-    "dev": "ts-node-dev --respawn --transpileOnly app.ts"
+    "dev": "ts-node-dev --respawn --transpile-only app.ts"
   },
   "repository": {
     "type": "git",

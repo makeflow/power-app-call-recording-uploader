@@ -45,11 +45,9 @@
     ]
   },
   "name": "upload-record",
-  "version": "0.1.4",
+  "version": "0.0.1",
   "displayName": "上传通话录音",
   "description": "配合手机APP实现上传通话录音到任务附件的功能",
   "hookBaseURL": "http://localhost:9999",
-  "permissions": [
-    "task:send-message"
-  ]
+  "permissions": ["task:send-message"]
 }
