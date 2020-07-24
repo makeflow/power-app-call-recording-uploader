@@ -35,7 +35,7 @@ async function onHookChange(data: PowerNodeHookData) {
       id: inputs.taskId as string,
       context,
     });
-    console.log(sessionId);
+    // console.log(sessionId);
     const info = new UploadRecordApiReturn(
       sessionId,
       inputs.phone,
