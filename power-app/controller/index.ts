@@ -1,11 +1,11 @@
 import Router from '@koa/router';
 import {AppControllersBuilder} from './controller';
-import {uploadRecordController} from './upload-record';
+import {uploadRecordControllers} from './upload-record';
 
 const router = new Router();
 const controllers = new AppControllersBuilder();
 
-controllers.add(uploadRecordController);
+controllers.add(uploadRecordControllers);
 
 controllers.applyTo(router);
 

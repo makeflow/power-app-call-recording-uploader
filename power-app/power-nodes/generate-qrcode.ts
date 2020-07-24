@@ -31,11 +31,10 @@ async function onHookChange(data: PowerNodeHookData) {
   try {
     verifyFields(inputs, 'taskId', 'phone');
     verifyPhone(inputs.phone);
-    const sessionId = phoneCallSession.add({
+    const sessionId = phoneCallSession.createSession({
       id: inputs.taskId as string,
       context,
     });
-    // console.log(sessionId);
     const info = new UploadRecordApiReturn(
       sessionId,
       inputs.phone,

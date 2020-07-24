@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import {Path} from 'path-parser';
 
 export interface Controller {
-  method: 'get' | 'post';
+  method: 'get' | 'post' | 'delete';
   path: string;
   handlers: Router.Middleware[];
 }
@@ -11,9 +11,11 @@ export class AppControllersBuilder {
   private controllers: Controller[] = [];
   private pathPatterns: Path[] = [];
 
-  add(controller: Controller): this {
-    this.controllers.push(controller);
-    this.pathPatterns.push(new Path(controller.path));
+  add(controllers: Controller[]): this {
+    this.controllers.push(...controllers);
+    this.pathPatterns.push(
+      ...controllers.map(controller => new Path(controller.path)),
+    );
     return this;
   }
 
