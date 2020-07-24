@@ -1,4 +1,4 @@
-import {uploadFile} from '@/api';
+import {doneUploadFileSession, uploadFile} from '@/api';
 import {UploadFileHandler} from '@/api/type';
 import MultipleSelect from '@/components/MultipleSelect';
 import {Option} from '@/components/MultipleSelect/type';
@@ -90,7 +90,7 @@ const infoIcon = (
 
 export default function PhoneCall() {
   const currentPhoneCallInfo = GlobalState.getPhoneCallInfo();
-  const {uploadURL, phone} = currentPhoneCallInfo;
+  const {phone} = currentPhoneCallInfo;
   const gotoScan = useGotoScan();
   const [operationMode, setOperationMode] = useState<OperationMode>(
     OperationMode.CanCall,
@@ -104,7 +104,10 @@ export default function PhoneCall() {
   };
 
   const finishCall = () => {
-    GlobalState.stopPhoneCallTask();
+    doneUploadFileSession()
+      .then(GlobalState.stopPhoneCallTask)
+      .catch(showError);
+
     gotoScan();
   };
 
@@ -152,7 +155,7 @@ export default function PhoneCall() {
     if (!selectedFiles.length) {
       return;
     }
-    const uploadFileHandler = uploadFile(uploadURL, selectedFiles);
+    const uploadFileHandler = uploadFile(selectedFiles);
     setUploadHandler(uploadFileHandler);
   };
 

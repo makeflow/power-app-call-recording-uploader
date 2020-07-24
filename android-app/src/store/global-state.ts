@@ -41,6 +41,11 @@ export class GlobalState {
 
   public static addFile(file: File): void {
     const currentFiles = GlobalState.getFiles();
+
+    if (currentFiles.some(({path}) => path === file.path)) {
+      return;
+    }
+
     setStore(GlobalStoreKey.CurrentFiles, [file, ...currentFiles]);
   }
 

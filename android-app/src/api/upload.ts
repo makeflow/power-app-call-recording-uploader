@@ -1,4 +1,5 @@
 import {File} from '@/models';
+import {GlobalState} from '@/store';
 import {getPercentage, SingleEvent, ThrottledEventStream} from '@/utils';
 import axios from 'axios';
 import {UploadFileHandler, UploadParams} from './type';
@@ -46,7 +47,18 @@ async function upload(
   }
 }
 
-export function uploadFile(url: string, files: File[]): UploadFileHandler {
+function getAndVerifyURL(): string {
+  const {uploadURL} = GlobalState.getPhoneCallInfo();
+
+  if (!uploadURL) {
+    throw new Error('currently no upload url set, cannot perform upload');
+  }
+
+  return uploadURL;
+}
+
+export function uploadFile(files: File[]): UploadFileHandler {
+  const url = getAndVerifyURL();
   const progressEvent = new ThrottledEventStream<number>();
   const stopEvent = new SingleEvent<void>();
 
@@ -56,4 +68,13 @@ export function uploadFile(url: string, files: File[]): UploadFileHandler {
     start: () => upload(url, files, progressEvent, stopEvent),
     stop: () => stopEvent.emit(),
   };
+}
+
+export async function doneUploadFileSession(): Promise<void> {
+  const url = getAndVerifyURL();
+  const res = await axios.delete(url);
+
+  if (res.data.code !== 200) {
+    throw new Error(res.data.message);
+  }
 }
