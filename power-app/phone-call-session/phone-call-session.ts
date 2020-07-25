@@ -2,8 +2,16 @@ import {nanoid} from 'nanoid';
 import {ErrorResponse, RecordFile} from '../model';
 import type {SessionID, Task} from './types';
 
+const MAX_SESSION_DURATION = 3 * 3600 * 1000; // 3 hours in millisecond
+const CLEAR_LOOP_INTERVAl = 0.5 * 3600 * 1000; // half hours in millisecond
+
 class PhoneCallSession {
   private tasks = new Map<SessionID, Task>();
+  private clearLoop: NodeJS.Timeout;
+
+  constructor() {
+    this.clearLoop = setInterval(this.clearTasks, CLEAR_LOOP_INTERVAl);
+  }
 
   createSession(task: Task): SessionID {
     const id = nanoid();
@@ -41,6 +49,21 @@ class PhoneCallSession {
     this.verify(id);
     return this.tasks.get(id)!;
   }
+
+  private clearTasks = () => {
+    const now = Date.now();
+    const garbageTaskIds: SessionID[] = [];
+
+    for (const [id, task] of this.tasks) {
+      if (now - task.createTime > MAX_SESSION_DURATION) {
+        garbageTaskIds.push(id);
+      }
+    }
+
+    for (const id of garbageTaskIds) {
+      this.tasks.delete(id);
+    }
+  };
 }
 
 export const phoneCallSession = new PhoneCallSession();

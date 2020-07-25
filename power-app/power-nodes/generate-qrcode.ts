@@ -34,6 +34,7 @@ async function onHookChange(data: PowerNodeHookData) {
     const sessionId = phoneCallSession.createSession({
       id: inputs.taskId as string,
       context,
+      createTime: Date.now(),
     });
     const info = new UploadRecordApiReturn(
       sessionId,
