@@ -1,6 +1,6 @@
 import {Dict} from 'tslang';
+import {uploadEndpoint} from '../config';
 import {PowerNode} from '../config-builder';
-import {upload_endpoint as uploadEndpoint} from '../config.json';
 import {DescriptionErrorMessage} from '../error-message';
 import {UploadRecordApiReturn} from '../model';
 import {showError, showQRCode} from '../output-view';
