@@ -1,6 +1,5 @@
 node_modules/
 db.json
 yarn.lock
-package-lock.json
 .vscode/
 build/
