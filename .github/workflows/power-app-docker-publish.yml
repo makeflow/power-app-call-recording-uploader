@@ -1,4 +1,4 @@
-name: Docker
+name: Publish power-app docker image
 
 on:
   workflow_dispatch:
