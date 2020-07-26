@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Docker image version'     
+        description: "Docker image version"
         required: true
 
 env:
@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Run check
         run: |
           npm install
@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
@@ -48,7 +48,7 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          VERSION=$INPUT_VERSION
+          VERSION=${{ inputs.version }}
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
