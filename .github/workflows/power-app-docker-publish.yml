@@ -10,16 +10,16 @@ on:
 env:
   IMAGE_NAME: makeflow-power-app-call-recording-uploader
 
+defaults:
+  run:
+    working-directory: power-app
+
 jobs:
   check:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Enter project folder
-        run: |
-          cd power-app
       
       - name: Run check
         run: |
@@ -34,10 +34,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Enter project folder
-        run: |
-          cd power-app
       
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
