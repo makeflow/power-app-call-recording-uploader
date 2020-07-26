@@ -48,7 +48,7 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          VERSION=${{ inputs.version }}
+          VERSION=${{ github.event.inputs.version }}
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
