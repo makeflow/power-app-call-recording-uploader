@@ -45,6 +45,11 @@ jobs:
       - name: "Build Android apk"
         run: |
           cd android
+          echo "${{ secrets.ANDROID_RELEASE_KEY }}" | LC_ALL=C tr -cd 0-9a-fA-F | xxd -r -p > ./app/${{ secrets.ANDROID_RELEASE_STORE_FILE }}
+          echo "MYAPP_RELEASE_STORE_FILE=${{ secrets.ANDROID_RELEASE_STORE_FILE }}" >> keystore.properties
+          echo "MYAPP_RELEASE_KEY_ALIAS==${{ secrets.ANDROID__RELEASE_KEY_ALIAS }}" >> keystore.properties
+          echo "MYAPP_RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}" >> keystore.properties
+          echo "MYAPP_RELEASE_KEY_PASSWORD=${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}" >> keystore.properties
           bash ./gradlew assembleRelease --stacktrace
 
       - name: Release
