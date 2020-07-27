@@ -39,3 +39,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: makeflowliuxing/power-app-call-recording-uploader
           tags: ${{ github.event.inputs.version }}
+          path: power-app
