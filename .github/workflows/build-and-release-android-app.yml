@@ -1,11 +1,9 @@
 name: Build and release android app
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "APP version"
-        required: true
+  push:
+    tags:
+      - "android-release-v*"
 
 defaults:
   run:
@@ -28,7 +26,7 @@ jobs:
     needs: check
 
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
@@ -42,7 +40,7 @@ jobs:
         run: |
           npm install
 
-      - name: "Build Android apk"
+      - name: Build Android apk
         run: |
           cd android
           echo "${{ secrets.ANDROID_RELEASE_KEY }}" | LC_ALL=C tr -cd 0-9a-fA-F | xxd -r -p > ./app/${{ secrets.ANDROID_RELEASE_STORE_FILE }}
@@ -52,15 +50,23 @@ jobs:
           echo "MYAPP_RELEASE_KEY_PASSWORD=${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}" >> keystore.properties
           bash ./gradlew assembleRelease --stacktrace
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          fail_on_unmatched_files: true
-          files: |
-            android-app/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
-            android-app/android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
-            android-app/android/app/build/outputs/apk/release/app-x86_64-release.apk
-            android-app/android/app/build/outputs/apk/release/app-x86-release.apk
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+
+      - name: Upload assets
+        run: |
+          set -x
+          assets=()
+          for asset in ./android/app/build/outputs/apk/release/*.apk; do
+            assets+=("-a" "$asset")
+          done
+          tag_name="${GITHUB_REF##*/}"
+          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
