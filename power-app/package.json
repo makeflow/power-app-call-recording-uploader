@@ -6,7 +6,7 @@
   "scripts": {
     "pub": "mf publish",
     "int": "cp .mfrc ~/.mfrc && mf login",
-    "dev": "ts-node-dev --respawn --transpile-only app.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "check": "tsc -p ."
   },
@@ -49,6 +49,7 @@
     "prettier-plugin-organize-imports": "^1.1.0",
     "pretty-quick": "^2.0.1",
     "ts-node-dev": "^1.0.0-pre.44",
+    "tslang": "^0.1.22",
     "typescript": "^3.9.2"
   }
 }

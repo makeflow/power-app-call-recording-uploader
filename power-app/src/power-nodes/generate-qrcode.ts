@@ -1,10 +1,10 @@
+import {nanoid as generateId} from 'nanoid';
 import {Dict} from 'tslang';
 import {uploadEndpoint} from '../config';
 import {PowerNode} from '../config-builder';
 import {DescriptionErrorMessage} from '../error-message';
 import {UploadRecordApiReturn} from '../model';
 import {showError, showQRCode} from '../output-view';
-import {phoneCallSession} from '../phone-call-session';
 import {PowerNodeHookData} from '../types';
 import {isPhoneNumberValid} from '../utils/validator';
 
@@ -27,20 +27,19 @@ function verifyFields(obj: Dict<any>, ...fields: string[]): void {
 }
 
 async function onHookChange(data: PowerNodeHookData) {
-  const {inputs, context} = data;
+  const {
+    inputs,
+    context: {storage},
+  } = data;
   try {
     verifyFields(inputs, 'taskId', 'phone');
     verifyPhone(inputs.phone);
-    const sessionId = phoneCallSession.createSession({
-      id: inputs.taskId as string,
-      context,
-      createTime: Date.now(),
-    });
-    const info = new UploadRecordApiReturn(
-      sessionId,
-      inputs.phone,
-      uploadEndpoint,
-    );
+
+    const id = generateId();
+    storage.set('id', id);
+    storage.set('taskId', inputs.taskId);
+
+    const info = new UploadRecordApiReturn(id, inputs.phone, uploadEndpoint);
     return showQRCode(info);
   } catch (error) {
     return showError(error);

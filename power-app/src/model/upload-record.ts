@@ -4,7 +4,8 @@ import {
   serialize,
 } from 'typescript-json-serializer';
 import urlJoin from 'url-join';
-import {SessionID} from '../phone-call-session';
+
+export type SessionID = string;
 
 export type RecordFile = {
   content: Buffer | NodeJS.ReadableStream;

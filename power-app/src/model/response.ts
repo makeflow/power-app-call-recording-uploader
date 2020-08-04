@@ -54,4 +54,8 @@ export class ErrorResponse extends Error implements IResponse {
   static internalServerError(message: string): ErrorResponse {
     return new ErrorResponse(500, message);
   }
+
+  static notFound(message: string): ErrorResponse {
+    return new ErrorResponse(404, message);
+  }
 }

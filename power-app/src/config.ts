@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'production') {
     },
   };
 } else {
-  const config = require('./power-app.json');
+  const config = require('../power-app.json');
 
   version = config.version;
 
