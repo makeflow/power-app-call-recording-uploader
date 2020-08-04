@@ -3,13 +3,14 @@ import Koa from 'koa';
 import {port, powerAppConfig, version} from './config';
 import controllers from './controller';
 import {globalState, response} from './middleware';
-import powerNodes from './power-nodes';
+import {powerItems, powerNodes} from './power-app';
 
 const powerApp = new PowerApp(powerAppConfig);
 
 powerApp.version(version, {
   contributions: {
     powerNodes,
+    powerItems,
   },
 });
 

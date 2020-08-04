@@ -7,8 +7,6 @@
     "outDir": "./build",
     "rootDir": "./src",
     "strict": true,
-    "baseUrl": "./",
-    "typeRoots": ["src/types"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

@@ -22,30 +22,38 @@
               "expression": "task_id"
             }
           }
-        ],
-        "actions": [
+        ]
+      }
+    ],
+    "powerItems": [
+      {
+        "name": "generate-qrcode",
+        "displayName": "生成二维码",
+        "description": "生成录音上传APP用的二维码",
+        "type": "indicator",
+        "inputs": [
           {
-            "name": "refresh",
-            "displayName": "刷新二维码",
-            "inputs": [
-              {
-                "name": "phone",
-                "type": "expression",
-                "expression": "phone"
-              },
-              {
-                "name": "taskId",
-                "type": "expression",
-                "expression": "task_id"
-              }
-            ]
+            "name": "phone",
+            "displayName": "客户电话",
+            "bind": {
+              "type": "expression",
+              "expression": "phone"
+            }
+          },
+          {
+            "name": "taskId",
+            "displayName": "任务ID",
+            "bind": {
+              "type": "expression",
+              "expression": "task_id"
+            }
           }
         ]
       }
     ]
   },
   "name": "call-recording-uploader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "上传通话录音",
   "description": "配合手机APP实现上传通话录音到任务附件的功能",
   "hookBaseURL": "http://localhost:9999",

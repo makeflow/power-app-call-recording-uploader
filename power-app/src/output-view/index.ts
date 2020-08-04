@@ -3,7 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import type {Dict} from 'tslang';
 import {DescriptionErrorMessage} from '../error-message';
 import {IUploadRecordApiReturn} from '../model';
-import {dataURLFromObject} from '../utils/qrcode';
+import {dataURLFromObject} from '../utils';
 import {errorView, qrCodeView, userFriendlyErrorView} from './view';
 
 export interface PowerAppDescription {

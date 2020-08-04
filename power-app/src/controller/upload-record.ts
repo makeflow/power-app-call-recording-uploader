@@ -32,15 +32,24 @@ async function getPowerAppContext(ctx: Context, next: Next) {
   }
 
   const powerApp: PowerApp = ctx.state.powerApp;
-  const powerAppContexts = await powerApp.getContexts('power-node', {
-    storage: {id},
-  });
+  const filter = {storage: {id}};
 
-  if (powerAppContexts.length < 1) {
-    throw ErrorResponse.notFound(`no task matched id '${id}'`);
+  const [powerNodeContexts, powerItemContexts] = await Promise.all([
+    powerApp.getContexts('power-node', filter),
+    powerApp.getContexts('power-item', filter),
+  ]);
+
+  let powerAppContext = powerNodeContexts.length
+    ? powerNodeContexts[0]
+    : powerItemContexts.length
+    ? powerItemContexts[0]
+    : null;
+
+  if (!powerAppContext) {
+    throw ErrorResponse.badRequest(`no task matched id '${id}'`);
   }
 
-  ctx.state.powerAppContext = powerAppContexts[0];
+  ctx.state.powerAppContext = powerAppContext;
 
   await next();
 }
@@ -49,7 +58,7 @@ async function uploadRecordFiles(ctx: Context) {
   const rawFiles = ctx.request.files;
   const recordFiles = rawFilesToRecordFiles(rawFiles);
 
-  const powerAppContext: PowerAppContext<'power-node'> =
+  const powerAppContext: PowerAppContext<'power-node' | 'power-item'> =
     ctx.state.powerAppContext;
   const taskId = await powerAppContext.storage.get('taskId');
 
