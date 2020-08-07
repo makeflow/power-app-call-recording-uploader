@@ -46,7 +46,7 @@ async function getPowerAppContext(ctx: Context, next: Next) {
     : null;
 
   if (!powerAppContext) {
-    throw ErrorResponse.badRequest(`no task matched id '${id}'`);
+    throw ErrorResponse.notFound(`no task matched id '${id}'`);
   }
 
   ctx.state.powerAppContext = powerAppContext;
