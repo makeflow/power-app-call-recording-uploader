@@ -93,6 +93,7 @@ export default function FolderSelector(props: Props) {
             .filter((item) => item.isDirectory() && !item.name.startsWith('.'))
             .map((item) => ({path: item.path, name: item.name})),
         )
+        .then(sortFolders)
         .then(setCurrentPathFolders);
     }
   }, [show, currentPath]);
@@ -150,4 +151,8 @@ export default function FolderSelector(props: Props) {
       </View>
     </Modal>
   );
+}
+
+function sortFolders(folders: Folder[]): Folder[] {
+  return folders.sort(({name: a}, {name: b}) => (a > b ? 1 : a < b ? -1 : 0));
 }

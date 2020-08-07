@@ -1,3 +1,5 @@
+import {RecordFile} from '@/types/native';
+
 export interface File {
   path: string;
   name: string;
@@ -5,14 +7,6 @@ export interface File {
   size: number;
   mtime: Date;
   status: 'not-uploaded' | 'uploading' | 'uploaded' | 'upload-failed';
-}
-
-export interface RecordFile {
-  path: string;
-  name: string;
-  type: string;
-  size: number;
-  mtime: number;
 }
 
 export class File {

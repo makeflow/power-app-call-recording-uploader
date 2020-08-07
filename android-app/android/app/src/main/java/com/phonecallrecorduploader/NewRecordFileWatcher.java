@@ -8,6 +8,7 @@ import java.io.File;
 import javax.annotation.Nullable;
 
 public class NewRecordFileWatcher {
+
   private FileObserver fileObserver;
   private NewRecordFileListener listener;
 

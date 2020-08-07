@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
+
   public static final String CHANNEL_ID = "com.phonecallrecorduploader.AutoUploadRecordServiceChannel";
 
   private final ReactNativeHost mReactNativeHost =

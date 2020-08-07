@@ -15,6 +15,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import javax.annotation.Nullable;
 
 public class ComModule extends ReactContextBaseJavaModule {
+
   private NewRecordFileWatcher newRecordFileWatcher = NewRecordFileWatcher.getInstance();
   private ReactContext reactContext;
 
@@ -42,6 +43,8 @@ public class ComModule extends ReactContextBaseJavaModule {
   }
 
   private void sendNewRecordFileEvent(Bundle fileInfo) {
-    this.sendEvent("NewRecordFile", Arguments.fromBundle(fileInfo));
+    this.sendEvent(NewRecordFile, Arguments.fromBundle(fileInfo));
   }
+
+  public static final String NewRecordFile = "NewRecordFile";
 }

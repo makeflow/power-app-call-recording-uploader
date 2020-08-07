@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat;
 import static com.phonecallrecorduploader.MainApplication.CHANNEL_ID;
 
 public class AutoUploadRecordService extends Service {
-  private NewRecordFileWatcher newRecordFileWatcher = NewRecordFileWatcher.getInstance();
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {

@@ -67,3 +67,5 @@ buck-out/
 ios/
 
 .eslintcache
+
+yarn.lock
