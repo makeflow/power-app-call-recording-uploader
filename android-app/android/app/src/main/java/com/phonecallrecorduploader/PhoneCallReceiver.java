@@ -1,6 +1,8 @@
 package com.phonecallrecorduploader;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import android.content.BroadcastReceiver;
@@ -8,8 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
-public abstract class PhoneCallReceiverBase extends BroadcastReceiver {
+class PhoneCallReceiverBase extends BroadcastReceiver {
 
   // The receiver will be recreated whenever android feels like it.
   // We need a static variable to remember data between instantiations
@@ -96,5 +99,31 @@ public abstract class PhoneCallReceiverBase extends BroadcastReceiver {
         break;
     }
     lastState = state;
+  }
+}
+
+public class PhoneCallReceiver extends PhoneCallReceiverBase {
+
+  public static final int OUTGOING_CALL_STARTED = 0;
+  public static final int OUTGOING_CALL_ENDED = 1;
+
+  private List<PhoneCallListener> listeners = new ArrayList<>(8);
+
+  @Override
+  protected void onOutgoingCallStarted(Context ctx, String number, Date time) {
+    Log.d("PhoneCallReceiver", "outgoing call started: " + number + " " + time);
+
+    listeners.forEach(listener -> listener.onChange(OUTGOING_CALL_STARTED, number, time));
+  }
+
+  @Override
+  protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date time) {
+    Log.d("PhoneCallReceiver", "outgoing call ended: " + number + " " + time);
+
+    listeners.forEach(listener -> listener.onChange(OUTGOING_CALL_ENDED, number, time));
+  }
+
+  public void addListener(PhoneCallListener listener) {
+    this.listeners.add(listener);
   }
 }

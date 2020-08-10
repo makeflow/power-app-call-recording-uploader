@@ -11,29 +11,45 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.phonecallrecorduploader.di.DaggerMainComponent;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
-public class ComModule extends ReactContextBaseJavaModule {
+public class ReactNativeModule extends ReactContextBaseJavaModule {
 
-  private NewRecordFileWatcher newRecordFileWatcher = NewRecordFileWatcher.getInstance();
+  @Inject
+  public RecordFileWatcher recordFileWatcher;
+
   private ReactContext reactContext;
 
-  public ComModule(ReactApplicationContext reactContext) {
+  public ReactNativeModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
     this.reactContext = reactContext;
-    this.newRecordFileWatcher.setListener(this::sendNewRecordFileEvent);
+    this.initInjection();
+    this.recordFileWatcher.setListener(this::sendNewRecordFileEvent);
+  }
+
+  private void initInjection() {
+    MainApplication mainApplication = (MainApplication) this.reactContext.getApplicationContext();
+
+    DaggerMainComponent
+      .builder()
+      .appComponent(mainApplication.getAppComponent())
+      .build()
+      .inject(this);
   }
 
   @NonNull
   @Override
   public String getName() {
-    return "ComModule";
+    return "ReactNativeModule";
   }
 
   @ReactMethod
   public void setRecordFolderPath(String path) {
-    this.newRecordFileWatcher.setRecordFileFolder(path);
+    this.recordFileWatcher.setRecordFileFolder(path);
   }
 
   private void sendEvent(String event, @Nullable WritableMap params) {
@@ -43,8 +59,8 @@ public class ComModule extends ReactContextBaseJavaModule {
   }
 
   private void sendNewRecordFileEvent(Bundle fileInfo) {
-    this.sendEvent(NewRecordFile, Arguments.fromBundle(fileInfo));
+    this.sendEvent(EVENT_NEW_RECORD_FILE, Arguments.fromBundle(fileInfo));
   }
 
-  public static final String NewRecordFile = "NewRecordFile";
+  public static final String EVENT_NEW_RECORD_FILE = "NewRecordFile";
 }

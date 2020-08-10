@@ -1,24 +1,18 @@
-import {DeviceEventEmitter, NativeModules} from 'react-native';
 import {initStore} from 'rlax';
 import {Storage} from './data';
-import {handleNewRecordFileEvent} from './device-event-handlers';
+import {setRecordFileFolder} from './native';
 import {GlobalState, initStoreData} from './store';
 
-async function setRecordFolderPath() {
+async function initRecordFolderPath() {
   const dir = await Storage.get(Storage.Key.RecordFileDir);
   if (dir) {
-    NativeModules.ComModule.setRecordFolderPath(dir);
+    setRecordFileFolder(dir);
   }
-}
-
-function addDeviceEventListeners() {
-  DeviceEventEmitter.addListener('NewRecordFile', handleNewRecordFileEvent);
 }
 
 async function init() {
   initStore({data: initStoreData, persist: 'none'});
-  await setRecordFolderPath();
-  addDeviceEventListeners();
+  await initRecordFolderPath();
   GlobalState.doneAppInit();
 }
 

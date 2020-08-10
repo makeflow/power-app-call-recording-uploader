@@ -2,7 +2,6 @@ package com.phonecallrecorduploader;
 
 import androidx.annotation.NonNull;
 
-import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -11,13 +10,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ComPackage implements ReactPackage {
+public class ReactNativePackage implements com.facebook.react.ReactPackage {
 
   @NonNull
   @Override
   public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
-    List<NativeModule> list = new ArrayList<NativeModule>();
-    list.add(new ComModule(reactContext));
+    List<NativeModule> list = new ArrayList<>();
+    list.add(new ReactNativeModule(reactContext));
     return list;
   }
 

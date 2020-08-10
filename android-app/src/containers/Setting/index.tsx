@@ -2,9 +2,10 @@ import FolderSelector from '@/components/FolderSelector';
 import Input from '@/components/Input';
 import {Storage} from '@/data';
 import {useVisibleEffect} from '@/hooks';
+import * as native from '@/native';
 import {Color} from '@/themes/colors';
 import React, {useState} from 'react';
-import {NativeModules, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {ExternalStorageDirectoryPath} from 'react-native-fs';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -30,7 +31,7 @@ export default function Setting() {
     if (path === defaultRecordFolder) {
       return;
     }
-    setRecordFolderPath(path).then(() => setDefaultRecordFolder(path));
+    setRecordFileFolder(path).then(() => setDefaultRecordFolder(path));
   };
 
   const onChooseFolderCancel = () => {
@@ -64,7 +65,7 @@ async function getRecordFolderPath(): Promise<string> {
   return path || '';
 }
 
-async function setRecordFolderPath(path: string): Promise<void> {
+async function setRecordFileFolder(path: string): Promise<void> {
   await Storage.set(Storage.Key.RecordFileDir, path);
-  NativeModules.ComModule.setRecordFolderPath(path);
+  native.setRecordFileFolder(path);
 }

@@ -1,7 +1,6 @@
 package com.phonecallrecorduploader;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,17 +11,23 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.facebook.react.ReactActivity;
+import com.phonecallrecorduploader.di.DaggerAppComponent;
+import com.phonecallrecorduploader.di.DaggerMainComponent;
+
+import static com.phonecallrecorduploader.PhoneCallReceiver.OUTGOING_CALL_ENDED;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class MainActivity extends ReactActivity {
 
   private static final int PERMISSION_REQUEST_CODE = 0;
 
-  private PhoneCallReceiver phoneCallReceiver;
+  @Inject
+  public PhoneCallReceiver phoneCallReceiver;
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
@@ -36,6 +41,8 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    this.initInjection();
 
     this.requestPermissionsNeeded();
     this.startAutoUploadRecordService();
@@ -62,6 +69,14 @@ public class MainActivity extends ReactActivity {
         this.finishAndRemoveTask();
       }
     }
+  }
+
+  private void initInjection() {
+    DaggerMainComponent
+      .builder()
+      .appComponent(((MainApplication) this.getApplication()).getAppComponent())
+      .build()
+      .inject(this);
   }
 
   private void startAutoUploadRecordService() {
@@ -100,17 +115,19 @@ public class MainActivity extends ReactActivity {
     intentFilter.addAction("android.intent.action.PHONE_STATE");
     intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
 
-    if (null == this.phoneCallReceiver) {
-      this.phoneCallReceiver = new PhoneCallReceiver();
-    }
-
     this.registerReceiver(this.phoneCallReceiver, intentFilter);
+
+    Log.d("MainActivity", "phoneCallReceiver: " + this.phoneCallReceiver);
+
+    this.phoneCallReceiver.addListener((state, number, time) -> {
+      if (OUTGOING_CALL_ENDED == state) {
+        this.bringActivityToFront();
+      }
+    });
   }
 
   private void unregisterPhoneCallReceiver() {
-    if (null != this.phoneCallReceiver) {
-      this.unregisterReceiver(this.phoneCallReceiver);
-    }
+    this.unregisterReceiver(this.phoneCallReceiver);
   }
 
   private boolean hasNoPermission(String permission) {
@@ -137,20 +154,5 @@ public class MainActivity extends ReactActivity {
     Intent self = new Intent(this.getApplicationContext(), MainActivity.class);
     self.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     this.startActivity(self);
-  }
-
-  private class PhoneCallReceiver extends PhoneCallReceiverBase {
-
-    @Override
-    protected void onOutgoingCallStarted(Context ctx, String number, Date time) {
-      Log.d("PhoneCallReceiver", "outgoing call started: " + number + " " + time);
-    }
-
-    @Override
-    protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date time) {
-      Log.d("PhoneCallReceiver", "outgoing call ended: " + number + " " + time);
-
-      MainActivity.this.bringActivityToFront();
-    }
   }
 }

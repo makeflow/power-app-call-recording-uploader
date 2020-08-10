@@ -1,10 +1,11 @@
 import {EmitterSubscription} from 'react-native';
 
-interface ComModule {
+interface ReactNativeModule {
   setRecordFolderPath(path: string): void;
 }
 
 export interface RecordFile {
+  number: string;
   path: string;
   name: string;
   type: string;
@@ -14,7 +15,7 @@ export interface RecordFile {
 
 declare module 'react-native' {
   interface NativeModulesStatic {
-    ComModule: ComModule;
+    ReactNativeModule: ReactNativeModule;
   }
 
   interface DeviceEventEmitterStatic {
