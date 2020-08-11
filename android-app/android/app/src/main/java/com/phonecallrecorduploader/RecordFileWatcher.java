@@ -9,7 +9,7 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
-import static com.phonecallrecorduploader.PhoneCallReceiver.OUTGOING_CALL_ENDED;
+import static com.phonecallrecorduploader.PhoneCallReceiver.*;
 
 public class RecordFileWatcher {
 
@@ -19,6 +19,9 @@ public class RecordFileWatcher {
   private RecordFileListener listener;
   private String folderPath;
   private String currentRecordFilePath;
+  private String currentNumber;
+  private boolean calling = false;
+  private boolean currentRecordFileWriting = false;
 
   public RecordFileWatcher(PhoneCallReceiver phoneCallReceiver) {
     this.phoneCallReceiver = phoneCallReceiver;
@@ -61,17 +64,20 @@ public class RecordFileWatcher {
           return;
         }
 
-        if (FileObserver.CREATE != event && FileObserver.CLOSE_WRITE != event) {
-          return;
-        }
-
+        String folderPath = RecordFileWatcher.this.folderPath;
         File file = new File(folderPath, path);
 
         if (file.isDirectory() || file.isHidden()) {
           return;
         }
 
-        RecordFileWatcher.this.currentRecordFilePath = file.getPath();
+        if (FileObserver.CREATE == event) {
+          RecordFileWatcher.this.currentRecordFileWriting = true;
+        } else if (FileObserver.CLOSE_WRITE == event) {
+          RecordFileWatcher.this.currentRecordFileWriting = false;
+          RecordFileWatcher.this.currentRecordFilePath = file.getPath();
+          RecordFileWatcher.this.tryDispatchNewRecordFileEvent();
+        }
       }
     };
   }
@@ -81,16 +87,45 @@ public class RecordFileWatcher {
 
     Log.d("RecordFileWatcher", "state: " + state + ", path: " + path);
 
-    if (
-      OUTGOING_CALL_ENDED == state
-        && null != path
-        && null != this.listener
-    ) {
-      Bundle fileInfo = RecordFileWatcher.createRecordFileInfo(path, number);
-      this.listener.getNewRecordFileInfo(fileInfo);
+    if (OUTGOING_CALL_STARTED == state) {
+      this.calling = true;
+      this.currentNumber = number;
+    } else if (OUTGOING_CALL_ENDED == state) {
+      this.calling = false;
+      this.tryDispatchNewRecordFileEvent();
     }
+  }
 
+  private void resetCallState() {
+    this.calling = false;
+    this.currentRecordFileWriting = false;
+    this.currentNumber = null;
     this.currentRecordFilePath = null;
+  }
+
+  private boolean isRecordEnded() {
+    return !this.calling
+      && !this.currentRecordFileWriting
+      && null != this.currentRecordFilePath
+      && null != this.currentNumber;
+  }
+
+  private void dispatchNewRecordFileEvent() {
+    Bundle fileInfo = RecordFileWatcher.createRecordFileInfo(
+      this.currentRecordFilePath,
+      this.currentNumber
+    );
+
+    this.listener.getNewRecordFileInfo(fileInfo);
+  }
+
+  private void tryDispatchNewRecordFileEvent() {
+    if (this.isRecordEnded()) {
+      if (null != this.listener) {
+        this.dispatchNewRecordFileEvent();
+      }
+      this.resetCallState();
+    }
   }
 
   private static Bundle createRecordFileInfo(String path, String number) {
