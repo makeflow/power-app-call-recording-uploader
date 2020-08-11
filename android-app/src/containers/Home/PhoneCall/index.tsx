@@ -10,7 +10,14 @@ import {Color} from '@/themes/colors';
 import {doNothing, showError} from '@/utils';
 import {systemPhoneCall} from '@/utils/android';
 import React, {useEffect, useState} from 'react';
-import {StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {
+  PixelRatio,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useStore} from 'rlax';
 import RecordFileInfo from './record-file-info';
@@ -27,30 +34,52 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: Color.white,
     borderRadius: 25,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
     borderWidth: 2,
     borderColor: Color.lightGray,
+  },
+
+  boxTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingLeft: 5,
+  },
+
+  boxTitle: {
+    color: Color.gray,
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 5,
   },
 
   info: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 120,
+  },
+
+  recordFileList: {
+    flex: 1,
+    marginBottom: 20,
   },
 
   recordFileSelectContainer: {
-    flex: 1,
-    marginBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
 
   infoIconContainer: {
     marginRight: 10,
   },
 
+  infoTextContainer: {
+    flex: 1,
+  },
+
   infoTextView: {
-    fontSize: 18,
+    fontSize: 18 * PixelRatio.getFontScale(),
     fontWeight: 'bold',
   },
 
@@ -79,10 +108,11 @@ const styles = StyleSheet.create({
 
   notice: {
     marginTop: 10,
-    width: 250,
     color: Color.gray,
   },
 });
+
+const listIcon = <Icon name="list-circle" size={30} color={Color.yellow} />;
 
 const infoIcon = (
   <Icon name="information-circle-outline" size={50} color={Color.lightGreen} />
@@ -214,19 +244,26 @@ export default function PhoneCall() {
       />
       <View style={[styles.box, styles.info]}>
         <View style={styles.infoIconContainer}>{infoIcon}</View>
-        <View>
+        <View style={styles.infoTextContainer}>
           <Text style={styles.infoTextView}>当前号码：{phone}</Text>
           <Text style={styles.notice}>
             注意记住开启通话录音，否则无法获取录音内容
           </Text>
         </View>
       </View>
-      <View style={[styles.box, styles.recordFileSelectContainer]}>
-        <MultipleSelect
-          emptyNotice="当前还没有通话记录哦~"
-          options={options}
-          onSelect={onSelectChange}
-        />
+
+      <View style={[styles.box, styles.recordFileList]}>
+        <View style={styles.boxTitleContainer}>
+          {listIcon}
+          <Text style={styles.boxTitle}>通话录音列表</Text>
+        </View>
+        <View style={styles.recordFileSelectContainer}>
+          <MultipleSelect
+            emptyNotice="当前还没有通话记录哦~"
+            options={options}
+            onSelect={onSelectChange}
+          />
+        </View>
       </View>
       <StyledButton
         style={createButtonStyle()}

@@ -11,11 +11,11 @@ import QRCodeScanner, {Event} from 'react-native-qrcode-scanner';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Color.white,
+    backgroundColor: Color.pureBlack,
   },
 
   scannerContainer: {
-    transform: [{scale: 1.5}],
+    transform: [{scale: 1.2}],
   },
 
   scannerCamera: {

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 17.5,
+    marginBottom: 25,
   },
 
   checkbox: {

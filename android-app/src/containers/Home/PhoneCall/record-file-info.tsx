@@ -15,8 +15,9 @@ const styles = StyleSheet.create({
   },
 
   row: {
-    alignItems: 'baseline',
+    alignItems: 'center',
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 
   divide: {
@@ -30,13 +31,13 @@ const styles = StyleSheet.create({
   info: {
     color: Color.gray,
     fontSize: 12,
-    marginTop: 8,
+    paddingVertical: 8,
+    marginRight: 'auto',
   },
 
   statusView: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 'auto',
     marginRight: 10,
   },
 
