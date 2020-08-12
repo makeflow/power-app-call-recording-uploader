@@ -1,4 +1,3 @@
-import {UploadFileHandler} from '@/api/type';
 import {File} from '@/models';
 
 export enum OperationMode {
@@ -10,7 +9,7 @@ export enum OperationMode {
 
 export type UploadModalProps = {
   show: boolean;
-  uploadHandler?: UploadFileHandler;
+  files: File[];
   onClose: (ok: boolean) => void;
 };
 

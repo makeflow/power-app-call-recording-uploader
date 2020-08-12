@@ -1,5 +1,3 @@
-import {uploadFile} from '@/api';
-import {UploadFileHandler} from '@/api/type';
 import MultipleSelect from '@/components/MultipleSelect';
 import {Option} from '@/components/MultipleSelect/type';
 import StyledButton from '@/components/StyledButton';
@@ -169,14 +167,13 @@ export default function PhoneCall() {
   const onAllFileSelectChange = setSelectedFilePaths;
   const onCurrentFileSelectChange = setSelectedFilePaths;
 
-  const [uploadHandler, setUploadHandler] = useState<UploadFileHandler>();
   const onModalClose = () => {
     setOperationMode(OperationMode.Upload);
   };
 
-  const manualUpload = () => {
-    setOperationMode(OperationMode.Uploading);
+  const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
 
+  const manualUpload = () => {
     const files = manualSelectMode ? allFiles : currentFiles;
 
     const selectedFiles = files.filter(
@@ -187,8 +184,8 @@ export default function PhoneCall() {
       return;
     }
 
-    const uploadFileHandler = uploadFile(selectedFiles);
-    setUploadHandler(uploadFileHandler);
+    setFilesToUpload(selectedFiles);
+    setOperationMode(OperationMode.Uploading);
   };
 
   function onManualSelectModeChange(manualSelect: boolean) {
@@ -247,7 +244,7 @@ export default function PhoneCall() {
     <View style={styles.container}>
       <UploadModal
         show={operationMode === OperationMode.Uploading}
-        uploadHandler={uploadHandler}
+        files={filesToUpload}
         onClose={onModalClose}
       />
       <View style={[styles.box, styles.info]}>

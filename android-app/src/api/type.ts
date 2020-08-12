@@ -1,4 +1,3 @@
-import {File} from '@/models';
 import {ThrottledEventStream} from '@/utils';
 
 export enum UploadParams {
@@ -7,12 +6,12 @@ export enum UploadParams {
 }
 
 export type UploadFileHandler = {
-  files: File[];
-
   /** 返回 true 表示上传正常，false 表示用户取消 */
-  start: () => Promise<boolean>;
+  start(): Promise<boolean>;
 
-  stop: () => void;
+  stop(): void;
+
+  retry(): UploadFileHandler;
 
   progressEvent: ThrottledEventStream<number>;
 };

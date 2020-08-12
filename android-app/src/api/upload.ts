@@ -57,15 +57,15 @@ function getAndVerifyURL(): string {
   return uploadURL;
 }
 
-export function uploadFile(files: File[]): UploadFileHandler {
+export function uploadFiles(files: File[]): UploadFileHandler {
   const url = getAndVerifyURL();
   const progressEvent = new ThrottledEventStream<number>();
   const stopEvent = new SingleEvent<void>();
 
   return {
-    files,
     progressEvent,
     start: () => upload(url, files, progressEvent, stopEvent),
     stop: () => stopEvent.emit(),
+    retry: () => uploadFiles(files),
   };
 }

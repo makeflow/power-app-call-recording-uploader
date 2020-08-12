@@ -1,8 +1,8 @@
+import {UploadFileHandler, uploadFiles} from '@/api';
 import StyledButton from '@/components/StyledButton';
-import {GlobalState} from '@/store';
 import {Color} from '@/themes/colors';
-import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {Circle as ProgressCircle} from 'react-native-progress';
 import {UploadModalProps} from './type';
@@ -51,42 +51,57 @@ const styles = StyleSheet.create({
 });
 
 export default function UploadModal(props: UploadModalProps) {
-  const {show, uploadHandler, onClose} = props;
+  const {show, files, onClose} = props;
   const [percentage, setPercentage] = useState(0);
+  const [uploadHandler, setUploadHandler] = useState<UploadFileHandler>();
 
   const closeWithSuccess = () => onClose(true);
   const closeWithFailure = () => onClose(false);
 
-  const cancel = () => {
-    uploadHandler?.stop();
-    closeWithFailure();
-  };
-
-  const onModalShow = () => {
+  const start = () => {
     if (!uploadHandler) {
       return;
     }
+
     uploadHandler.progressEvent.subscribe(setPercentage);
-    const files = uploadHandler.files;
-    uploadHandler
-      .start()
-      .then((ok) => {
-        if (ok) {
-          files.forEach(GlobalState.setFileUploaded);
-        }
-      })
-      .catch(() => {
-        // TODO: 每个文件单独上传，从而可以具体获知是哪些文件没有上传成功
-        files.forEach(GlobalState.setFileUploadFailed);
-        // TODO: 上传失败后的提示
-        closeWithFailure();
-      });
+
+    uploadHandler.start().catch(() => {
+      Alert.alert(
+        '上传失败',
+        '上传失败，可能是网络或者其他问题，请重试或联系管理员',
+        [
+          {text: '取消', onPress: closeWithFailure},
+          {text: '重试', onPress: retry},
+        ],
+      );
+    });
   };
+
+  const cancel = () => {
+    if (uploadHandler) {
+      uploadHandler.stop();
+      closeWithFailure();
+    }
+  };
+
+  const retry = () => {
+    if (uploadHandler) {
+      setUploadHandler(uploadHandler.retry());
+    }
+  };
+
+  useEffect(() => {
+    if (files.length) {
+      setUploadHandler(uploadFiles(files));
+    }
+  }, [files]);
+
+  useEffect(start, [uploadHandler]);
 
   const isDone = percentage >= 100;
 
   return (
-    <Modal style={styles.modal} isVisible={show} onModalShow={onModalShow}>
+    <Modal style={styles.modal} isVisible={show}>
       <View style={styles.content}>
         <ProgressCircle
           size={110}
