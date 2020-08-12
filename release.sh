@@ -39,7 +39,11 @@ npm --no-git-tag-version --allow-same-version version "$VER"
 cd -
 
 git add .
-git commit -m "$TAG"
+
+if [ -n "$(git diff --cached)" ]; then
+  git commit -m "$TAG"
+fi
+
 git tag $TAG
 git push
 git push origin $TAG
