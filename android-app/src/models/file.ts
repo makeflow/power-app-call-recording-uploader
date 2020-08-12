@@ -1,4 +1,6 @@
 import {RecordFile} from '@/types/native';
+import {ReadDirItem} from 'react-native-fs';
+import {lookup as lookupMime} from 'react-native-mime-types';
 
 export interface File {
   path: string;
@@ -19,6 +21,17 @@ export class File {
       type: recordFile.type,
       size: recordFile.size,
       mtime: new Date(recordFile.mtime),
+      status: 'not-uploaded',
+    };
+  }
+
+  public static fromRNDirItem(item: ReadDirItem): File {
+    return {
+      path: item.path,
+      name: item.name,
+      type: lookupMime(item.name) || 'application/octet-stream',
+      size: Number(item.size),
+      mtime: item.mtime || new Date(0),
       status: 'not-uploaded',
     };
   }

@@ -65,7 +65,10 @@ const styles = StyleSheet.create({
 });
 
 export default function RecordFileInfo(props: RecordFileInfoProps) {
-  const {name, size, mtime, status} = props.file;
+  const {
+    file: {name, size, mtime, status},
+    showingState,
+  } = props;
 
   const formatedSize = filesize(size);
   const formatedMtime = formatDate(mtime);
@@ -79,7 +82,7 @@ export default function RecordFileInfo(props: RecordFileInfoProps) {
         <Text style={styles.info}>
           {formatedSize} <Text style={styles.divide}>|</Text> {formatedMtime}
         </Text>
-        {createStatusView(status)}
+        {showingState ? createStatusView(status) : null}
       </View>
     </View>
   );

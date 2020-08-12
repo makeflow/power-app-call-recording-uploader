@@ -1,19 +1,20 @@
-import {doneUploadFileSession, uploadFile} from '@/api';
+import {uploadFile} from '@/api';
 import {UploadFileHandler} from '@/api/type';
 import MultipleSelect from '@/components/MultipleSelect';
 import {Option} from '@/components/MultipleSelect/type';
 import StyledButton from '@/components/StyledButton';
+import {Storage} from '@/data';
 import {File} from '@/models';
-import {useGotoScan} from '@/routes';
 import {GlobalState, GlobalStoreKey} from '@/store';
 import {Color} from '@/themes/colors';
-import {doNothing, showError} from '@/utils';
+import {doNothing, readDir, showError, sortByMtime} from '@/utils';
 import {systemPhoneCall} from '@/utils/android';
 import React, {useEffect, useState} from 'react';
 import {
   PixelRatio,
   StyleProp,
   StyleSheet,
+  Switch,
   Text,
   View,
   ViewStyle,
@@ -54,6 +55,16 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 
+  switchLabel: {
+    color: Color.gray,
+    fontSize: 10,
+    marginLeft: 'auto',
+  },
+
+  switch: {
+    transform: [{scale: 0.9}],
+  },
+
   info: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -90,7 +101,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
 
-  callBtn: {
+  defaultBtn: {
     backgroundColor: Color.blue,
   },
 
@@ -121,24 +132,15 @@ const infoIcon = (
 export default function PhoneCall() {
   const currentPhoneCallInfo = GlobalState.getPhoneCallInfo();
   const {phone} = currentPhoneCallInfo;
-  const gotoScan = useGotoScan();
   const [operationMode, setOperationMode] = useState<OperationMode>(
-    OperationMode.CanCall,
+    OperationMode.Default,
   );
+  const [manualSelectMode, setManualSelectMode] = useState(false);
 
   const startCall = () => {
     systemPhoneCall(phone)
       .then(GlobalState.startPhoneCallTask)
-      .then(() => setOperationMode(OperationMode.CanEndCall))
       .catch(showError);
-  };
-
-  const finishCall = () => {
-    doneUploadFileSession()
-      .then(GlobalState.stopPhoneCallTask)
-      .catch(showError);
-
-    gotoScan();
   };
 
   useEffect(() => {
@@ -149,28 +151,23 @@ export default function PhoneCall() {
     };
   }, []);
 
-  const files: File[] = useStore(GlobalStoreKey.CurrentFiles);
-  const options = filesToOptions(files);
+  const [allFiles, setAllFiles] = useState<File[]>([]);
+  const currentFiles: File[] = useStore(GlobalStoreKey.CurrentFiles);
 
-  const canPerformManualUpload = files.some(fileUploadable);
+  const createAllFileOptions = () => filesToOptions(allFiles, false);
+  const createCurrentFileOptions = () => filesToOptions(currentFiles, true);
 
-  useEffect(() => {
-    if (operationMode === OperationMode.Upload && !canPerformManualUpload) {
-      setOperationMode(OperationMode.CanEndCall);
-    }
-  }, [canPerformManualUpload, operationMode]);
-
-  const [selected, setSelected] = useState<string[]>([]);
-  const onSelectChange = (newSelected: string[]) => {
+  const [selectedFilePaths, _setSelectedFilePaths] = useState<string[]>([]);
+  const setSelectedFilePaths = (newSelected: string[]) => {
     if (newSelected.length) {
       setOperationMode(OperationMode.Upload);
-    } else if (GlobalState.isInPhoneCallProcess()) {
-      setOperationMode(OperationMode.CanEndCall);
     } else {
-      setOperationMode(OperationMode.CanCall);
+      setOperationMode(OperationMode.Default);
     }
-    setSelected(newSelected);
+    _setSelectedFilePaths(newSelected);
   };
+  const onAllFileSelectChange = setSelectedFilePaths;
+  const onCurrentFileSelectChange = setSelectedFilePaths;
 
   const [uploadHandler, setUploadHandler] = useState<UploadFileHandler>();
   const onModalClose = () => {
@@ -179,26 +176,42 @@ export default function PhoneCall() {
 
   const manualUpload = () => {
     setOperationMode(OperationMode.Uploading);
+
+    const files = manualSelectMode ? allFiles : currentFiles;
+
     const selectedFiles = files.filter(
-      (file) => fileUploadable(file) && selected.includes(file.path),
+      (file) => fileUploadable(file) && selectedFilePaths.includes(file.path),
     );
+
     if (!selectedFiles.length) {
       return;
     }
+
     const uploadFileHandler = uploadFile(selectedFiles);
     setUploadHandler(uploadFileHandler);
   };
 
+  function onManualSelectModeChange(manualSelect: boolean) {
+    setManualSelectMode(manualSelect);
+    setSelectedFilePaths([]);
+
+    if (manualSelect) {
+      Storage.get(Storage.Key.RecordFileDir).then((dir) => {
+        if (dir) {
+          readDir(dir).then(setAllFiles);
+        }
+      });
+    }
+  }
+
   function createButtonTitle() {
     switch (operationMode) {
-      case OperationMode.CanCall:
-        return '开始通话';
-      case OperationMode.CanEndCall:
-        return '结束通话';
+      case OperationMode.Default:
+        return manualSelectMode ? '选择上传' : '拨号';
       case OperationMode.Upload:
       case OperationMode.Uploading:
       case OperationMode.Done:
-        return `上传（${selected.length}个）`;
+        return `上传（${selectedFilePaths.length}个）`;
       default:
         return '';
     }
@@ -206,10 +219,8 @@ export default function PhoneCall() {
 
   function createButtonOnPressHandler() {
     switch (operationMode) {
-      case OperationMode.CanCall:
-        return startCall;
-      case OperationMode.CanEndCall:
-        return finishCall;
+      case OperationMode.Default:
+        return manualSelectMode ? doNothing : startCall;
       case OperationMode.Upload:
         return manualUpload;
       default:
@@ -220,11 +231,8 @@ export default function PhoneCall() {
   function createButtonStyle() {
     const style: StyleProp<ViewStyle>[] = [styles.btn];
     switch (operationMode) {
-      case OperationMode.CanCall:
-        style.push(styles.callBtn);
-        break;
-      case OperationMode.CanEndCall:
-        style.push(styles.callingBtn);
+      case OperationMode.Default:
+        style.push(styles.defaultBtn);
         break;
       case OperationMode.Upload:
       case OperationMode.Uploading:
@@ -256,13 +264,31 @@ export default function PhoneCall() {
         <View style={styles.boxTitleContainer}>
           {listIcon}
           <Text style={styles.boxTitle}>通话录音列表</Text>
+          <Text style={styles.switchLabel}>手动模式</Text>
+          <Switch
+            style={styles.switch}
+            trackColor={{false: Color.lightGray, true: Color.green}}
+            thumbColor={Color.white}
+            value={manualSelectMode}
+            onValueChange={onManualSelectModeChange}
+          />
         </View>
         <View style={styles.recordFileSelectContainer}>
-          <MultipleSelect
-            emptyNotice="当前还没有通话记录哦~"
-            options={options}
-            onSelect={onSelectChange}
-          />
+          {manualSelectMode ? (
+            <MultipleSelect
+              key="all-file-selector"
+              emptyNotice="未找到任何通话录音"
+              options={createAllFileOptions()}
+              onSelect={onAllFileSelectChange}
+            />
+          ) : (
+            <MultipleSelect
+              key="current-file-selector"
+              emptyNotice="当前还没有通话记录哦~"
+              options={createCurrentFileOptions()}
+              onSelect={onCurrentFileSelectChange}
+            />
+          )}
         </View>
       </View>
       <StyledButton
@@ -274,10 +300,13 @@ export default function PhoneCall() {
   );
 }
 
-function filesToOptions(files: File[]): Option<string>[] {
-  return files.map<Option<string>>((file) => ({
+function filesToOptions(
+  files: File[],
+  showingState: boolean,
+): Option<string>[] {
+  return sortByMtime(files).map<Option<string>>((file) => ({
     id: file.path,
-    content: <RecordFileInfo file={file} />,
+    content: <RecordFileInfo file={file} showingState={showingState} />,
     value: file.path,
     disabled: !fileUploadable(file),
   }));

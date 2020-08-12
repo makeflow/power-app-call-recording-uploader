@@ -69,12 +69,3 @@ export function uploadFile(files: File[]): UploadFileHandler {
     stop: () => stopEvent.emit(),
   };
 }
-
-export async function doneUploadFileSession(): Promise<void> {
-  const url = getAndVerifyURL();
-  const res = await axios.delete(url);
-
-  if (res.data.code !== 200) {
-    throw new Error(res.data.message);
-  }
-}

@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
 
   checkboxDisabled: {
     padding: 4,
-    marginLeft: 1,
   },
 });
 
