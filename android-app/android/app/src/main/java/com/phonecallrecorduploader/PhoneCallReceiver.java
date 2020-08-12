@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+// TODO (BUG): 有时 onOutgoingCallStarted 获得的 number 是上一次通话的
 class PhoneCallReceiverBase extends BroadcastReceiver {
 
   // The receiver will be recreated whenever android feels like it.

@@ -115,7 +115,7 @@ const statusIconMap = {
 };
 
 const statusTextMap = {
-  'not-uploaded': '等待确认',
+  'not-uploaded': '等待上传',
   uploading: '正在上传',
   uploaded: '上传成功',
   'upload-failed': '上传失败',

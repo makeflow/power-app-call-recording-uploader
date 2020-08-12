@@ -26,7 +26,7 @@ public class RecordFileWatcher {
   public RecordFileWatcher(PhoneCallReceiver phoneCallReceiver) {
     this.phoneCallReceiver = phoneCallReceiver;
     Log.d("RecordFileWatcher", "phoneCallReceiver: " + phoneCallReceiver);
-    this.phoneCallReceiver.addListener(this::handleOutgoingCallEnded);
+    this.phoneCallReceiver.addListener(this::handleOutgoingCall);
   }
 
   public void setRecordFileFolder(String path) {
@@ -82,14 +82,15 @@ public class RecordFileWatcher {
     };
   }
 
-  private void handleOutgoingCallEnded(int state, String number, Date time) {
+  private void handleOutgoingCall(int state, String number, Date time) {
     String path = this.currentRecordFilePath;
 
     Log.d("RecordFileWatcher", "state: " + state + ", path: " + path);
 
+    this.currentNumber = number;
+
     if (OUTGOING_CALL_STARTED == state) {
       this.calling = true;
-      this.currentNumber = number;
     } else if (OUTGOING_CALL_ENDED == state) {
       this.calling = false;
       this.tryDispatchNewRecordFileEvent();

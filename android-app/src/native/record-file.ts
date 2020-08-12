@@ -13,15 +13,14 @@ function handleNewRecordFileEvent(recordFileInfo: RecordFile): void {
     return;
   }
 
-  const file = File.fromRecordFile(recordFileInfo);
-  GlobalState.addFile(file);
-
   const phoneCallInfo = GlobalState.getPhoneCallInfo();
+  const file = File.fromRecordFile(recordFileInfo);
 
   if (recordFileInfo.number !== phoneCallInfo.phone) {
     return;
   }
 
+  GlobalState.addFile(file);
   upload(file);
 }
 

@@ -118,12 +118,6 @@ public class MainActivity extends ReactActivity {
     this.registerReceiver(this.phoneCallReceiver, intentFilter);
 
     Log.d("MainActivity", "phoneCallReceiver: " + this.phoneCallReceiver);
-
-    this.phoneCallReceiver.addListener((state, number, time) -> {
-      if (OUTGOING_CALL_ENDED == state) {
-        this.bringActivityToFront();
-      }
-    });
   }
 
   private void unregisterPhoneCallReceiver() {
@@ -148,11 +142,5 @@ public class MainActivity extends ReactActivity {
       permissions,
       PERMISSION_REQUEST_CODE
     );
-  }
-
-  private void bringActivityToFront() {
-    Intent self = new Intent(this.getApplicationContext(), MainActivity.class);
-    self.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    this.startActivity(self);
   }
 }
