@@ -41,7 +41,7 @@ cd -
 git add .
 
 if [ -n "$(git diff --cached)" ]; then
-  git commit -m "$TAG"
+  git commit -m "$TAG" --no-verify
 fi
 
 git tag $TAG
