@@ -71,11 +71,16 @@ public class RecordFileWatcher {
           return;
         }
 
+        String filePath = file.getPath();
+
         if (FileObserver.CREATE == event) {
           RecordFileWatcher.this.currentRecordFileWriting = true;
+          RecordFileWatcher.this.currentRecordFilePath = filePath;
+          Log.d("RecordFileWatcher", "file created, path: " + filePath);
         } else if (FileObserver.CLOSE_WRITE == event) {
           RecordFileWatcher.this.currentRecordFileWriting = false;
-          RecordFileWatcher.this.currentRecordFilePath = file.getPath();
+          RecordFileWatcher.this.currentRecordFilePath = filePath;
+          Log.d("RecordFileWatcher", "file write closed, path: " + filePath);
           RecordFileWatcher.this.tryDispatchNewRecordFileEvent();
         }
       }
@@ -84,16 +89,14 @@ public class RecordFileWatcher {
 
   private void handleOutgoingCall(int state, String number, Date time) {
     String path = this.currentRecordFilePath;
-
-    Log.d("RecordFileWatcher", "state: " + state + ", path: " + path);
-
     this.currentNumber = number;
 
     if (OUTGOING_CALL_STARTED == state) {
       this.calling = true;
+      Log.d("RecordFileWatcher", "call started, number: " + number + ", path: " + path);
     } else if (OUTGOING_CALL_ENDED == state) {
       this.calling = false;
-      this.tryDispatchNewRecordFileEvent();
+      Log.d("RecordFileWatcher", "call ended, number: " + number + ", path: " + path);
     }
   }
 
@@ -102,6 +105,7 @@ public class RecordFileWatcher {
     this.currentRecordFileWriting = false;
     this.currentNumber = null;
     this.currentRecordFilePath = null;
+    Log.d("RecordFileWatcher", "call state reset");
   }
 
   private boolean isRecordEnded() {
@@ -118,6 +122,8 @@ public class RecordFileWatcher {
     );
 
     this.listener.getNewRecordFileInfo(fileInfo);
+
+    Log.d("RecordFileWatcher", "NewRecordFile event dispatched");
   }
 
   private void tryDispatchNewRecordFileEvent() {

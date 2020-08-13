@@ -112,15 +112,11 @@ public class PhoneCallReceiver extends PhoneCallReceiverBase {
 
   @Override
   protected void onOutgoingCallStarted(Context ctx, String number, Date time) {
-    Log.d("PhoneCallReceiver", "outgoing call started: " + number + " " + time);
-
     listeners.forEach(listener -> listener.onChange(OUTGOING_CALL_STARTED, number, time));
   }
 
   @Override
   protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date time) {
-    Log.d("PhoneCallReceiver", "outgoing call ended: " + number + " " + time);
-
     listeners.forEach(listener -> listener.onChange(OUTGOING_CALL_ENDED, number, time));
   }
 
