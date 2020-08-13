@@ -1,7 +1,7 @@
 {
-  "name": "power-app-starter",
-  "version": "0.1.0",
-  "description": "Power-App 开发模板",
+  "name": "power-app-call-recording-uploader",
+  "version": "0.0.2",
+  "description": "Makeflow 通话录音上传 Power-App",
   "main": "index.js",
   "scripts": {
     "pub": "mf publish",
