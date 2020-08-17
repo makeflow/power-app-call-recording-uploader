@@ -1,6 +1,6 @@
 {
   "name": "power-app-call-recording-uploader",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Makeflow 通话录音上传 Power-App",
   "main": "index.js",
   "scripts": {
