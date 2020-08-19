@@ -1,14 +1,9 @@
 import {Dict} from 'tslang';
 import {DescriptionErrorMessage} from '../error-message';
-import {isPhoneNumberValid} from '../utils';
 
 export function verifyPhone(phone?: string): void {
   if (!phone) {
     throw DescriptionErrorMessage.NO_PHONE_NUMBER;
-  }
-
-  if (!isPhoneNumberValid(phone)) {
-    throw DescriptionErrorMessage.PHONE_NUMBER_FORMAT_ERROR;
   }
 }
 
