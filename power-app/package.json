@@ -1,6 +1,6 @@
 {
   "name": "power-app-call-recording-uploader",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Makeflow 通话录音上传 Power-App",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@koa/router": "^9.0.1",
-    "@makeflow/power-app": "^0.2.0-wip.34",
+    "@makeflow/power-app": "^0.2.0-wip.40",
     "@types/url-join": "^4.0.0",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
