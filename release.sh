@@ -27,6 +27,7 @@ android)
 power-app)
   TAG="power-app-v$VER"
   cd power-app
+  echo "$VER" > ./VERSION
   ;;
 
 *)
