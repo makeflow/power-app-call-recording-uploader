@@ -24,7 +24,9 @@
   "dependencies": {
     "@koa/router": "^9.0.1",
     "@makeflow/power-app": "^0.2.0-wip.40",
+    "@types/fluent-ffmpeg": "^2.1.16",
     "@types/url-join": "^4.0.0",
+    "fluent-ffmpeg": "^2.1.2",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
     "nanoid": "^3.1.10",

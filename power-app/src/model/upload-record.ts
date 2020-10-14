@@ -1,3 +1,4 @@
+import {Readable} from 'stream';
 import {
   JsonProperty,
   Serializable,
@@ -8,7 +9,7 @@ import urlJoin from 'url-join';
 export type SessionID = string;
 
 export type RecordFile = {
-  content: Buffer | NodeJS.ReadableStream;
+  content: Readable;
   name: string;
   type: string;
 };
