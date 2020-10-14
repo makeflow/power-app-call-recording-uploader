@@ -1,6 +1,8 @@
 FROM node:14
 
-RUN add-apt-repository universe \
+RUN apt-get update \
+    && apt-get install software-properties-common \
+    && add-apt-repository universe \
     && apt update \
     && apt install ffmpeg
 
