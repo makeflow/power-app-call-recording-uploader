@@ -1,5 +1,9 @@
 FROM node:14
 
+RUN add-apt-repository universe \
+    && apt update \
+    && apt install ffmpeg
+
 WORKDIR /app
 
 COPY . /app
