@@ -1,8 +1,6 @@
 FROM node:14
 
 RUN apt-get update \
-    && apt-get install software-properties-common -y \
-    && add-apt-repository universe -y \
     && apt install ffmpeg -y
 
 WORKDIR /app
